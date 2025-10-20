@@ -129,28 +129,29 @@ The project is designed around a single, top-level user-facing interface functio
 
 ## Workflow Diagram
 
-The following diagram illustrates the high-level workflow orchestrated by the `run_complete_act_tensor_replication` and `run_act_tensor_pipeline` functions.
+The following diagram illustrates the high-level workflow orchestrated by the `run_complete_act_tensor_replication` function.
 
 ```mermaid
 graph TD
-    A[Start: run_complete_act_tensor_replication] --> B{For each (Regime, Smoother)};
-    B --> C(Task 35: run_act_tensor_pipeline);
+    A[Start: run_complete_act_tensor_replication] --> B[Load Data & Config];
+    B --> C{Loop over all (Regime, Smoother) combinations};
+    C -- Run one experiment --> D[Task 35: run_act_tensor_pipeline];
 
-    subgraph C [Single Experiment Run]
-        C1(Tasks 1-6: Data Prep & Tensorization) --> C2(Tasks 7-10: Create Train/Test Split);
-        C2 --> C3(Tasks 11-18: ACT-Tensor Imputation);
-        C3 --> C4(Tasks 19-20: Imputation Evaluation);
-        C3 --> C5(Tasks 28-34: Asset Pricing Evaluation);
-        C2 --> C6(Tasks 21-27: Baselines & Ablations);
+    subgraph D [Single Experiment Run]
+        direction LR
+        D1(Tasks 1-10: Data Prep & Split) --> D2(Tasks 11-18: ACT-Tensor Imputation);
+        D2 --> D3(Tasks 19-20: Imputation Eval);
+        D2 --> D4(Tasks 28-34: Asset Pricing Eval);
+        D1 --> D5(Tasks 21-27: Baselines & Ablations);
     end
 
-    C --> D{Save run_summary.json};
-    D --> B;
-    B -- After all runs --> E(Task 37: generate_publication_artifacts);
-    E --> F[End: Final Tables & Figures];
+    D --> E[Save run_summary.json];
+    E --> C;
+    C -- After all runs --> F[Task 37: generate_publication_artifacts];
+    F --> G[End: Final Tables & Figures];
 
     %% Style Definitions
-    style C fill:#e6f2ff,stroke:#333,stroke-width:2px
+    style D fill:#e6f2ff,stroke:#333,stroke-width:2px
 ```
 
 ## Prerequisites
