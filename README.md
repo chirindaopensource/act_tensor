@@ -133,9 +133,9 @@ The following diagram illustrates the high-level workflow orchestrated by the `r
 
 ```mermaid
 graph TD
-    A[Start: run_complete_act_tensor_replication] --> B[Load Data & Config];
-    B --> C{Loop over all (Regime, Smoother) combinations};
-    C -- Run one experiment --> D[Task 35: run_act_tensor_pipeline];
+    A["Start: run_complete_act_tensor_replication"] --> B["Load Data & Config"];
+    B --> C{"Iterate All Experimental Conditions"};
+    C -- Run one experiment --> D["Task 35: run_act_tensor_pipeline"];
 
     subgraph D [Single Experiment Run]
         direction LR
@@ -145,10 +145,10 @@ graph TD
         D1 --> D5(Tasks 21-27: Baselines & Ablations);
     end
 
-    D --> E[Save run_summary.json];
+    D --> E["Save run_summary.json"];
     E --> C;
-    C -- After all runs --> F[Task 37: generate_publication_artifacts];
-    F --> G[End: Final Tables & Figures];
+    C -- After all runs complete --> F["Task 37: generate_publication_artifacts"];
+    F --> G["End: Final Tables & Figures"];
 
     %% Style Definitions
     style D fill:#e6f2ff,stroke:#333,stroke-width:2px
