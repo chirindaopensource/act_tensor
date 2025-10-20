@@ -198,6 +198,7 @@ act_tensor/
 │
 ├── act_tensor_draft.ipynb    # Main implementation notebook with all 38 tasks
 ├── config.yaml               # Master configuration file
+├── requirements.txt          # Python package dependencies
 ├── data/
 │   └── raw/
 │       └── crsp_compustat_merged.parquet (User-provided)
@@ -209,8 +210,8 @@ act_tensor/
 │       ├── run_summary.json
 │       └── ...
 │
-├── LICENSE
-└── README.md
+├── LICENSE                   # MIT Project License File
+└── README.md                 # Project 'README.md' file
 ```
 
 ## Customization
