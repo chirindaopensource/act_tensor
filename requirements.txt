@@ -1,0 +1,186 @@
+﻿# ==============================================================================
+# ACT-Tensor Pipeline - Python Package Requirements
+# ==============================================================================
+#
+# This requirements.txt file specifies all third-party dependencies needed to
+# run the ACT-Tensor framework for financial dataset imputation via tensor
+# completion, as implemented in the paper by Mo, Li, Zhang, and Chen (2025).
+#
+# Installation Instructions:
+# --------------------------
+# Install all dependencies using pip:
+#   pip install -r requirements.txt
+#
+# For reproducible environments, consider using:
+#   pip install --upgrade pip
+#   pip install -r requirements.txt
+#
+# For development environments with exact version pinning:
+#   pip freeze > requirements-lock.txt
+#
+# Python Version Requirement:
+# ---------------------------
+# This project requires Python 3.8 or higher due to the use of:
+#   - Advanced type hints (typing.Literal, typing.Protocol)
+#   - Modern f-string formatting
+#   - Dictionary merge operators (|)
+#
+# Dependency Categorization:
+# --------------------------
+# 1. Core Scientific Computing
+# 2. Tensor Operations
+# 3. Machine Learning
+# 4. Visualization
+#
+# Version Strategy:
+# -----------------
+# Minimum versions are specified using '>=' to balance:
+#   - Stability: Ensuring critical bug fixes and API consistency
+#   - Flexibility: Allowing security patches and minor improvements
+#   - Compatibility: Preventing breaking changes in older versions
+#
+# For production deployments, consider pinning exact versions.
+#
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Core Scientific Computing Stack
+# ------------------------------------------------------------------------------
+
+# NumPy: Fundamental package for numerical computing with multi-dimensional arrays
+# Required for: Tensor operations, linear algebra, random number generation,
+#               array manipulations, and vectorized computations
+# Minimum version 1.21.0 ensures:
+#   - Modern array API and typing support (numpy.typing module)
+#   - Performance improvements in array operations
+#   - Stable random number generator interface
+numpy>=1.21.0
+
+# Pandas: Data structures and analysis tools for structured data
+# Required for: Time-series manipulation, panel data handling, DataFrame operations,
+#               financial data merging, and the Styler API for table formatting
+# Minimum version 1.3.0 ensures:
+#   - Robust Styler functionality (pandas.io.formats.style.Styler)
+#   - Performance improvements in groupby and merge operations
+#   - Better handling of missing data
+pandas>=1.3.0
+
+# SciPy: Scientific computing library with advanced mathematical functions
+# Required for: Signal processing (lfilter, lfiltic), statistics (rankdata),
+#               numerical optimization, and filtering operations (uniform_filter1d)
+# Minimum version 1.7.0 ensures:
+#   - Stable signal processing interface
+#   - Improved performance in sparse matrix operations
+#   - Reliable statistical functions
+scipy>=1.7.0
+
+# ------------------------------------------------------------------------------
+# Tensor Operations and Multilinear Algebra
+# ------------------------------------------------------------------------------
+
+# TensorLy: Tensor learning library with decomposition algorithms
+# Required for: CP decomposition, Tucker decomposition, HOSVD,
+#               tensor unfolding (matricization), Khatri-Rao products,
+#               and multi-mode tensor-matrix products (multi_mode_dot)
+# Minimum version 0.7.0 ensures:
+#   - Modern tensor operation API
+#   - Efficient backend support (NumPy, PyTorch, TensorFlow)
+#   - Stable decomposition algorithms
+tensorly>=0.7.0
+
+# ------------------------------------------------------------------------------
+# Machine Learning and Statistical Modeling
+# ------------------------------------------------------------------------------
+
+# Scikit-learn: Machine learning library with classification, regression, and clustering
+# Required for: K-Means clustering (firm partitioning by data density),
+#               Ridge regression (factor model evaluation),
+#               cross-validation, and model selection utilities
+# Minimum version 1.0.0 ensures:
+#   - Consistent API across all estimators
+#   - Improved KMeans initialization and convergence
+#   - Better handling of sparse data
+scikit-learn>=1.0.0
+
+# ------------------------------------------------------------------------------
+# Data Visualization
+# ------------------------------------------------------------------------------
+
+# Matplotlib: Comprehensive plotting library for creating static, animated, and interactive visualizations
+# Required for: Portfolio performance plots, factor analysis visualizations,
+#               imputation quality assessments, and publication-quality figures
+# Minimum version 3.4.0 ensures:
+#   - Modern OO interface
+#   - Better default styling
+#   - Improved performance for large datasets
+matplotlib>=3.4.0
+
+# Seaborn: Statistical data visualization library built on Matplotlib
+# Required for: Heatmaps (correlation matrices, tensor slices),
+#               distribution plots, regression visualizations,
+#               and publication-ready statistical graphics
+# Minimum version 0.11.0 ensures:
+#   - Compatibility with recent pandas/matplotlib versions
+#   - Improved default aesthetics
+#   - Better handling of categorical data
+seaborn>=0.11.0
+
+# ==============================================================================
+# Optional Dependencies (for extended functionality)
+# ==============================================================================
+#
+# Uncomment the following if you require additional capabilities:
+#
+# # For faster linear algebra operations:
+# # numpy>=1.21.0[mkl]  # Intel Math Kernel Library acceleration
+#
+# # For parallel processing:
+# # joblib>=1.0.0
+#
+# # For advanced statistical testing:
+# # statsmodels>=0.13.0
+#
+# # For progress bars during long computations:
+# # tqdm>=4.60.0
+#
+# # For reproducible random state management:
+# # (Already included in numpy>=1.21.0)
+#
+# # For HDF5 file storage (large dataset persistence):
+# # tables>=3.7.0
+# # h5py>=3.1.0
+#
+# # For Parquet file format (efficient columnar storage):
+# # pyarrow>=6.0.0
+#
+# # For database connectivity (WRDS, Compustat, CRSP):
+# # sqlalchemy>=1.4.0
+# # psycopg2-binary>=2.9.0  # PostgreSQL adapter
+#
+# # For advanced tensor backends:
+# # torch>=1.10.0  # PyTorch backend for TensorLy
+# # tensorflow>=2.7.0  # TensorFlow backend for TensorLy
+#
+# ==============================================================================
+# Development Dependencies (for contributors)
+# ==============================================================================
+#
+# If you are developing or contributing to this project, install these additional packages:
+#
+# # Testing:
+# # pytest>=7.0.0
+# # pytest-cov>=3.0.0
+#
+# # Code quality:
+# # black>=22.0.0  # Code formatter
+# # flake8>=4.0.0  # Linter
+# # mypy>=0.950  # Static type checker
+# # isort>=5.10.0  # Import sorter
+#
+# # Documentation:
+# # sphinx>=4.5.0
+# # sphinx-rtd-theme>=1.0.0
+#
+# ==============================================================================
+# End of requirements.txt
+# ==============================================================================
