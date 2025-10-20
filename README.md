@@ -135,9 +135,9 @@ The following diagram illustrates the high-level workflow orchestrated by the `r
 graph TD
     A["Start: run_complete_act_tensor_replication"] --> B["Load Data & Config"];
     B --> C{"Iterate All Experimental Conditions"};
-    C -- Run one experiment --> D["Task 35: run_act_tensor_pipeline"];
+    C -- Run one experiment --> D[subgraph Single Experiment Run];
 
-    subgraph D [Single Experiment Run]
+    subgraph D
         direction LR
         D1(Tasks 1-10: Data Prep & Split) --> D2(Tasks 11-18: ACT-Tensor Imputation);
         D2 --> D3(Tasks 19-20: Imputation Eval);
@@ -146,7 +146,7 @@ graph TD
     end
 
     D --> E["Save run_summary.json"];
-    E --> C;
+    E -->|"Collect summary & continue"| C;
     C -- After all runs complete --> F["Task 37: generate_publication_artifacts"];
     F --> G["End: Final Tables & Figures"];
 
