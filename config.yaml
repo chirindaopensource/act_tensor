@@ -1,0 +1,151 @@
+﻿# ===================================================================================
+# Configuration File for the ACT-Tensor Pipeline
+#
+# This file contains all parameters required to run the full replication of the
+# "ACT-Tensor: Tensor Completion Framework for Financial Dataset Imputation" study.
+# ===================================================================================
+
+study_scope:
+  start_date: "2016-01-01"        # source: Dataset section (sample 2016-01 to 2020-12)
+  end_date: "2020-12-31"          # source: Dataset section
+  share_code_filter: [10, 11]     # source: standard asset-pricing universe (CRSP shrcd for common stocks)
+  include_exchanges: [1, 2, 3]    # source: standard (1=NYSE, 2=AMEX, 3=NASDAQ)
+  exclude_non_exchange_listings: true
+  use_delisting_returns: true
+  delist_return_fallback: null    # source: paper does not add fallback; keep raw CRSP dlret policy
+  drop_extreme_outliers: true
+  outlier_method: "domain_specific"
+
+linking_policy:
+  prefer_linkprim: ["P", "C"]
+  allow_linktype: ["LC", "LU"]
+  enforce_date_containment: true
+  link_date_fields:
+    start: "linkdt"
+    end: "linkenddt"
+  tie_breaker: "prefer_primary_then_latest"
+
+tensor_policies:
+  T_months_expected: 60
+  L_characteristics: 45
+  rank_normalization:
+    by_month: true
+    scale_to_interval: [-0.5, 0.5]
+    rank_method: "average"
+    handle_missing: "leave_nan"
+  missing_value_marker: "NaN"
+  mask_projection_operator: "P_Omega"
+  time_index: "calendar_month_end"
+  firm_index: "permno"
+  char_index: "characteristic_id"
+
+imputation_hparams:
+  CP_rank_R: 40
+  clusters_K: 10
+  density_threshold_tau: 0.40
+  ridge_lambda: 0.0
+  tensor_decomposition: "CP"
+  solver: "ALS_masked"
+
+optimization_settings:
+  kmeans:
+    init: "k-means++"
+    n_init: 10
+    max_iter: 300
+    tol: 1.0e-6
+    distance: "euclidean"
+    mask_handling: "consistent_with_Omega"
+  cp_als:
+    max_sweeps: 200
+    tol_rel_improvement: 1.0e-5
+    column_normalization: true
+    nonnegativity_constraints: false
+    init_method: "svd_based"
+    mttkrp_backend: "optimized"
+
+smoothing_settings:
+  method: "CMA"
+  CMA:
+    delta: 5
+    boundary: "truncate"
+  EMA:
+    theta: 0.5
+    init: "use_first_observation"
+  KF:
+    state_equation: "random_walk"
+    measurement_equation: "noisy_obs"
+    process_var_h_grid: [1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1]
+    meas_var_r_grid: [1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1]
+    init: "steady_state_or_empirical"
+
+masking_regimes:
+  test_fraction_of_observed: 0.10
+  MAR:
+    sampling: "uniform_without_replacement"
+  Block:
+    block_length_months: 12
+    start_at_begin_prob: 0.40
+    placement_strategy: "random_elsewhere"
+  Logit:
+    two_stage_model: true
+    estimation_method: "MLE"
+    covariates_initial_gap: ["logsize", "age", "distress_indicator"]
+    covariates_monthly: ["logsize_lag1", "age_lag1", "prev_missing_indicator"]
+    link_function: "logistic"
+    # Coefficients for the simulation model (must be specified for reproducibility)
+    alpha_coeffs: [-1.0, -0.3, 0.2, 0.5] # Intercept, logsize, age, distress
+    beta_coeffs: [-2.0, -0.2, 0.1, 1.5]  # Intercept, logsize_lag1, age_lag1, prev_missing
+  disjoint_test_sets: true
+
+portfolio_settings:
+  P_size_buckets: 20
+  Q_char_buckets: 20
+  bucket_method: "equal_count"
+  weights: "value_weighted"
+  weight_source: "market_cap_month_end"
+  use_excess_returns: true
+  risk_free_source: "monthly_TBill_or_French_RF"
+
+factor_extraction:
+  mode_ranks:
+    k_p: 5
+    k_q: 5
+    k_ell: 5
+  decomposition: "HOSVD"
+  time_mode_factored: false
+  factor_stack_order: "consistent_fixed_order"
+  selection_method: "forward_stepwise"
+  selection_criterion: "pseudo_cross_sectional_R2"
+  target_num_factors: 6
+
+evaluation_metrics:
+  imputation: ["RMSE_imp", "MAE_imp", "MAPE_imp", "R2_imp"]
+  pricing: ["RMSE_alpha", "MAE_alpha"]
+  prediction: ["MAE_Rank", "IC", "TB_Sharpe"]
+  correlation_type: "Pearson"
+  ranking_method: "ordinal"
+  sharpe_annualization_factor: 12.0 # Note: sqrt(12) is approx 3.46, but the factor is 12.
+
+stability_test:
+  lambda_grid: [1.0e-5, 1.0e-4, 1.0e-3, 1.0e-2, 5.0e-2, 1.0e-1, 5.0e-1]
+  regimes: ["Block", "Logit"]
+  metric: "RMSE_imp"
+  expected_variation: "negligible"
+
+reproducibility:
+  seed_global: 1729
+  seed_kmeans: 31415
+  seed_cp_als: 27182
+  seed_mask_mar: 101
+  seed_mask_block: 202
+  seed_mask_logit: 303
+  float_dtype: "float64"
+  svd_solver: "deterministic"
+
+guardrails:
+  CMA_boundary_handling: "truncate"
+  EMA_init_policy: "use_first_observation"
+  KF_smoother: "RTS"
+  enforce_disjoint_eval_masks: true
+  fit_only_on_unmasked_observed: true
+  smoother_uses_imputed_only: true
