@@ -132,23 +132,26 @@ The project is designed around a single, top-level user-facing interface functio
 The following diagram illustrates the high-level workflow orchestrated by the `run_complete_act_tensor_replication` function.
 
 ```mermaid
-graph TD
-    A["Start: run_complete_act_tensor_replication"] --> B["Load Data & Config"];
-    B --> C{"Iterate All Experimental Conditions"};
-    C -- Run one experiment --> D[subgraph Single Experiment Run];
-
-    subgraph D
+graph LR
+    subgraph Full Replication Workflow
         direction LR
-        D1(Tasks 1-10: Data Prep & Split) --> D2(Tasks 11-18: ACT-Tensor Imputation);
-        D2 --> D3(Tasks 19-20: Imputation Eval);
-        D2 --> D4(Tasks 28-34: Asset Pricing Eval);
-        D1 --> D5(Tasks 21-27: Baselines & Ablations);
-    end
+        A["Start: run_complete_act_tensor_replication"] --> B["Load Data & Config"];
+        B --> C{"Loop Control <br> For each (Regime, Smoother)"};
+        C -- Run next experiment --> D[subgraph Single Experiment Run];
+        
+        subgraph D
+            direction TD
+            D1(Tasks 1-10: Data Prep & Split) --> D2(Tasks 11-18: ACT-Tensor Imputation);
+            D1 --> D5(Tasks 21-27: Baselines & Ablations);
+            D2 --> D3(Tasks 19-20: Imputation Eval);
+            D2 --> D4(Tasks 28-34: Asset Pricing Eval);
+        end
 
-    D --> E["Save run_summary.json"];
-    E -->|"Collect summary & continue"| C;
-    C -- After all runs complete --> F["Task 37: generate_publication_artifacts"];
-    F --> G["End: Final Tables & Figures"];
+        D -- Produces --> E["run_summary.json"];
+        E -- "Collect result & loop" --> C;
+        C -- "All runs complete" --> F["Task 37: generate_publication_artifacts"];
+        F --> G["End: Final Tables & Figures"];
+    end
 
     %% Style Definitions
     style D fill:#e6f2ff,stroke:#333,stroke-width:2px
